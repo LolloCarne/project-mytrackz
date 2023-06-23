@@ -4,4 +4,5 @@ from . import views
 
 urlpatterns = [
    path('', views.prova),
+   path('getInfo/',views.getInfo),
 ]
