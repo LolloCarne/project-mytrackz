@@ -17,16 +17,16 @@ class Ordine(models.Model):
     flagStatoOrdine = models.BooleanField(null=False, default=False)
     indirizzoSpedizione = models.CharField(max_length=200)
 
+class StateChoises(models.IntegerChoices):
+    INSERITO= 1,'Inserito'
+    IN_PRODUZIONE = 2,'In Produzione'
+    LOGISTICA_SPEDIZIONE= 3,'Logistica e Spedizione'
+    SPEDITO= 4,'Spedito'
 class Prodotto(models.Model):
-    STATE_CHOISES = [
-        ('Inserito',1),
-        ('In Produzione',2),
-        ('Logistica e Spedizione',3),
-        ('Spedito',4)
-    ]
+
     prodottoId = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    ordineId = models.ForeignKey(Ordine,on_delete=models.CASCADE)
-    quantita = models.FloatField()
-    stato = models.CharField(max_length=25,choices=STATE_CHOISES)
-    descrizioneProdotto = models.CharField(max_length=200)
-    miniatura = models.ImageField(max_length=100,upload_to=None) #inserire in upload_to il path dove carichi l'immagine
+    ordineId = models.ForeignKey(Ordine,on_delete=models.CASCADE,blank=True)
+    quantita = models.FloatField(blank=True)
+    stato = models.IntegerField(default=StateChoises.INSERITO, choices=StateChoises.choices)
+    descrizioneProdotto = models.CharField(max_length=200,blank=True)
+    miniatura = models.ImageField(max_length=100,upload_to=None,blank=True) #inserire in upload_to il path dove carichi l'immagine
