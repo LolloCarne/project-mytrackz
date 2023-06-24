@@ -25,8 +25,7 @@ SECRET_KEY = 'django-insecure-wd0@(hfn0e+x0fq=14j(x-^2wj+5=__sizbt01*2%3xx+2$4y+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['192.168.1.119', 'localhost', '127.0.0.1']
 
 # Application definition
 
@@ -39,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'aggiornaStato.apps.AggiornastatoConfig',
     'rest_framework',
+    "django_extensions",
 ]
 
 AUTH_USER_MODEL = 'aggiornaStato.Cliente'
