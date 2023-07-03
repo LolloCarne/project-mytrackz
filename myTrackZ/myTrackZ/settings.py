@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from corsheaders.defaults import default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = 'django-insecure-wd0@(hfn0e+x0fq=14j(x-^2wj+5=__sizbt01*2%3xx+2$4y+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.119', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.1.119', 'localhost', '127.0.0.1', '*']
 
 # Application definition
 
@@ -39,7 +40,11 @@ INSTALLED_APPS = [
     'aggiornaStato.apps.AggiornastatoConfig',
     'rest_framework',
     "django_extensions",
+    "corsheaders",
 ]
+
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_HEADERS=default_headers + ('ordineId',)
 
 AUTH_USER_MODEL = 'aggiornaStato.Cliente'
 
@@ -51,6 +56,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+
+
 ]
 
 ROOT_URLCONF = 'myTrackZ.urls'

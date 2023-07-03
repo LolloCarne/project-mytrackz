@@ -1,3 +1,41 @@
 from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
+from aggiornaStato.models import Prodotto, Ordine, Cliente
+from aggiornaStato.serializer import OrdineSerializer,ProdottoSerializer,ClienteSerializer
+from django.db.models import Q
 
-# Create your views here.
+
+@api_view(['POST'])
+def addUtente(request):
+    serializer=ClienteSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def addOrdine(request):
+    serializer=OrdineSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+@api_view(['POST'])
+def addProdotto(request):
+    serializer=ProdottoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def getOrdini(request):
+    #print(request.headers["ordineId"])
+    if request.headers["ordineId"]:
+        ordine= Ordine.objects.get(ordineId=request.headers["ordineId"])
+        cliente= Cliente.objects.get(clienteId=ordine.clienteId.clienteId)
+        serializerCliente=ClienteSerializer(cliente).data
+        risposta=[{"Ordine":OrdineSerializer(ordine).data,"Cliente":{"ragioneSociale":serializerCliente["ragioneSociale"]}}]
+        return Response(risposta)
+    

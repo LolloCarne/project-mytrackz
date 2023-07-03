@@ -12,6 +12,14 @@ import uuid
 from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 
+def aggiornaStatoProdotto(stato,id):
+        try:
+            Prodotto.objects.filter(prodottoId=id).update(stato=stato)
+            prodotto=Prodotto.objects.get(prodottoId=id)
+            prodotto.save()
+        except:
+            return Response({"error":"Errore nell'update"},status=status.HTTP_400_BAD_REQUEST)
+
 def prova(request):
     return render(request,'aggiornaStato/prova.html')
 
@@ -34,16 +42,19 @@ def getInfo(request):
 
 @api_view(['PUT'])
 def aggiorna(request):
-    
+
     if int(request.headers['stato'])>4:
         return Response({"error":"Stato inesitente"},status=status.HTTP_400_BAD_REQUEST)
-    try:
-        Prodotto.objects.filter(prodottoId=request.headers['id']).update(stato=request.headers['stato'])
-        prodotto=Prodotto.objects.get(prodottoId=request.headers['id'])
-        prodotto.save()
-    except:
-        return Response({"error":"Errore nell'update"},status=status.HTTP_400_BAD_REQUEST)
 
+    prodotto=Prodotto.objects.get(prodottoId=request.headers['id'])
+    if  int(request.headers['stato']) < int(prodotto.stato):
+        ordineid=prodotto.ordineId.ordineId
+        ordine=Ordine.objects.get(ordineId=ordineid)
+        if ordine.flagStatoOrdine:
+            aggiornaStatoProdotto(request.headers['stato'],request.headers['id'])
+            Ordine.objects.filter(ordineId=ordineid).update(flagStatoOrdine=False)
+            return Response({"Avviso":"Stato retrocesso e ordine riaperto"},status=status.HTTP_200_OK)    
+    aggiornaStatoProdotto(request.headers['stato'],request.headers['id'])
     if int(request.headers['stato'])==4:
         tempFlag=True
         ordine=prodotto.ordineId
@@ -53,20 +64,15 @@ def aggiorna(request):
                 return Response({"Avviso":"Ordine non completato"},status=status.HTTP_200_OK)
         
         if tempFlag==True:
-            id=Prodotto.objects.get(prodottoId=request.headers['id']).ordineId.ordineId
+            id=prodotto.ordineId.ordineId
             Ordine.objects.filter(ordineId=id).update(flagStatoOrdine=True)
             return Response({"Avviso":"Ordine completato"},status=status.HTTP_200_OK)
             
     
     return Response(status=status.HTTP_200_OK)
+  
 
 
-@api_view(['POST'])
-def createUser(request):
-    serializer=ClienteSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-    return Response(serializer.data)
 
 
 
