@@ -9,6 +9,7 @@ from django.contrib import messages
 from django.http import HttpResponse
 import uuid
 
+
 from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 

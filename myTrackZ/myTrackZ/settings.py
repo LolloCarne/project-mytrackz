@@ -44,7 +44,7 @@ INSTALLED_APPS = [
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_ALLOW_HEADERS=default_headers + ('ordineId',)
+CORS_ALLOW_HEADERS=default_headers + ('ordineId','ragioneSociale','dataFrom','dataTo')
 
 AUTH_USER_MODEL = 'aggiornaStato.Cliente'
 
