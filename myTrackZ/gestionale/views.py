@@ -31,14 +31,18 @@ def addProdotto(request):
     return Response(serializer.data)
 
 
+
+def contaProdotti(idOrdine):
+    return Prodotto.objects.filter(ordineId=idOrdine).count()
+
+
 @api_view(['GET'])
 def getOrdini(request):
-    #print(request.headers["ordineId"])
     if request.headers["ordineId"]!="":
         ordine= Ordine.objects.get(ordineId=request.headers["ordineId"])
         cliente= Cliente.objects.get(clienteId=ordine.clienteId.clienteId)
         serializerCliente=ClienteSerializer(cliente).data
-        risposta=[{"Ordine":OrdineSerializer(ordine).data,"Cliente":{"ragioneSociale":serializerCliente["ragioneSociale"]}}]
+        risposta=[{serializerCliente["ragioneSociale"]:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(request.headers["ordineId"]),"ordinePadre":""}]}]
         return Response(risposta)
     
     
@@ -49,9 +53,21 @@ def getOrdini(request):
         momentaneo={cliente.ragioneSociale:[]}
         for ordine in ordini_date:
             if ordine.clienteId.clienteId == cliente.clienteId:
-                momentaneo[cliente.ragioneSociale].append(OrdineSerializer(ordine).data)
+                datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"ordinePadre":""}
+                momentaneo[cliente.ragioneSociale].append(datiOrdine)
         risposta.append(momentaneo)
 
     
     return Response(risposta)
-    
+
+@api_view(['GET'])
+def getProdotti(request):
+    prodotti=Prodotto.objects.filter(ordineId=request.headers["ordineId"])
+    risposta=ProdottoSerializer(prodotti,many=True)
+    return Response(risposta.data)
+
+@api_view(['GET'])
+def getClienti(request):
+    utenti= Cliente.objects.filter(ragioneSociale__icontains=request.headers["ragioneSociale"],email__icontains=request.headers["email"])
+    risposta=ClienteSerializer(utenti,many=True)
+    return Response(risposta.data)

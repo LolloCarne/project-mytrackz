@@ -7,4 +7,5 @@ urlpatterns = [
    path('addOrdine/',views.addOrdine),
    path('addProdotto/',views.addProdotto),
    path('getOrdini/',views.getOrdini),
+   path('getProdotti/',views.getProdotti),
 ]
