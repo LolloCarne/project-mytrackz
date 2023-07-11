@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     "django_extensions",
     "corsheaders",
+    "rest_framework.authtoken"
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True

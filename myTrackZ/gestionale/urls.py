@@ -9,4 +9,6 @@ urlpatterns = [
    path('getOrdini/',views.getOrdini),
    path('getProdotti/',views.getProdotti),
    path('getClienti/',views.getClienti),
+   path('signup/',views.signup),
+   path('login/',views.login)
 ]

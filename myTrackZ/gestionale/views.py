@@ -1,13 +1,14 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import status
 from aggiornaStato.models import Prodotto, Ordine, Cliente
 from aggiornaStato.serializer import OrdineSerializer,ProdottoSerializer,ClienteSerializer
-from django.db.models import Q
-from itertools import chain 
-from django.db import connection
-from django.http import JsonResponse
+from rest_framework.authtoken.models import Token
+from django.shortcuts import get_object_or_404
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+
 
 @api_view(['POST'])
 def addUtente(request):
@@ -71,3 +72,34 @@ def getClienti(request):
     utenti= Cliente.objects.filter(ragioneSociale__icontains=request.headers["ragioneSociale"],email__icontains=request.headers["email"])
     risposta=ClienteSerializer(utenti,many=True)
     return Response(risposta.data)
+
+@api_view(['POST'])
+def signup(request):
+    serializer=ClienteSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        user=Cliente.objects.get(username=request.data["username"])
+        user.set_password(request.data["password"])
+        user.save()
+        token = Token.objects.create(user=user)
+        return Response({"token":token.key,"user":serializer.data})
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['POST'])
+def login(request):
+    user = get_object_or_404(Cliente, username=request.data["username"])
+    if not user.check_password(request.data["password"]):
+        return Response({"detail":"Not found"},status=status.HTTP_404_NOT_FOUND)
+    token, created= Token.objects.get_or_create(user=user)
+    serializer=ClienteSerializer(instance=user)
+
+    return Response({"token":token.key,"user":serializer.data})
+
+
+@api_view(['POST'])
+@authentication_classes([SessionAuthentication,TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def test_token(request):
+    return Response({})
