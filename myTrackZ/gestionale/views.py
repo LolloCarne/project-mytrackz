@@ -36,6 +36,8 @@ def addProdotto(request):
 def contaProdotti(idOrdine):
     return Prodotto.objects.filter(ordineId=idOrdine).count()
 
+def contaOrdini(idCliente):
+    return Ordine.objects.filter(clienteId=idCliente).count()
 
 @api_view(['GET'])
 def getOrdini(request):
@@ -70,8 +72,13 @@ def getProdotti(request):
 @api_view(['GET'])
 def getClienti(request):
     utenti= Cliente.objects.filter(ragioneSociale__icontains=request.headers["ragioneSociale"],email__icontains=request.headers["email"])
-    risposta=ClienteSerializer(utenti,many=True)
-    return Response(risposta.data)
+    #clienti=ClienteSerializer(utenti,many=True)
+    risposta=[]
+    for cliente in utenti:
+        oggetto={"ragioneSociale":ClienteSerializer(cliente).data["ragioneSociale"],"email":ClienteSerializer(cliente).data["email"],"clienteId":ClienteSerializer(cliente).data["clienteId"],"numeroOrdini":contaOrdini(ClienteSerializer(cliente).data["clienteId"])}
+        risposta.append(oggetto)
+        
+    return Response(risposta)
 
 @api_view(['POST'])
 def signup(request):
