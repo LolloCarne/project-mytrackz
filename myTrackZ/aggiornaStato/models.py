@@ -16,6 +16,9 @@ class Ordine(models.Model):
     dataOrdine = models.DateTimeField(blank=True)
     flagStatoOrdine = models.BooleanField(null=False, default=False)
     indirizzoSpedizione = models.CharField(max_length=200)
+    descrizione=models.TextField(blank=True)
+    ordinePadre=models.CharField(max_length=30,blank=True)
+
 
 class StateChoises(models.IntegerChoices):
     INSERITO= 1,'Inserito'
