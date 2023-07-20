@@ -68,8 +68,14 @@ def getOrdini(request):
 @api_view(['GET'])
 def getProdotti(request):
     prodotti=Prodotto.objects.filter(ordineId=request.headers["ordineId"])
-    risposta=ProdottoSerializer(prodotti,many=True)
-    return Response(risposta.data)
+    ordine=Ordine.objects.get(ordineId=request.headers["ordineId"])
+    ordine_invio={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}
+    risposta=[]
+    risposta.append(ordine_invio)
+    for prodotto in prodotti:
+        risposta.append(ProdottoSerializer(prodotto).data)
+    
+    return Response(risposta)
 
 @api_view(['GET'])
 def getClienti(request):
