@@ -13,6 +13,20 @@ import uuid
 from django.contrib.auth.forms import UserCreationForm
 # Create your views here.
 
+#def decrementaOrdinePadre(prodotto,ordine):
+#    ordinePadre=Ordine.objects.get(ordineId=ordine.ordinePadre)
+#    for p in Prodotto.objects.filter(ordineId=ordinePadre.ordineId).all():
+#        if p.descrizioneProdotto == prodotto.descrizioneProdotto:
+#            p.update(quantita=p.quantita-prodotto.quantita)
+#            salvataggio_p=Prodotto.objects.get(ordineId=ordinePadre.ordineId,descrizioneProdotto=prodotto.descrizioneProdotto)
+#            salvataggio_p.save()
+    
+            
+
+
+    
+        
+
 def aggiornaStatoProdotto(stato,id):
         try:
             Prodotto.objects.filter(prodottoId=id).update(stato=stato)

@@ -41,26 +41,28 @@ def contaOrdini(idCliente):
 
 @api_view(['GET'])
 def getOrdini(request):
-    if request.headers["ordineId"]!="":
-        ordine= Ordine.objects.get(ordineId=request.headers["ordineId"])
-        cliente= Cliente.objects.get(clienteId=ordine.clienteId.clienteId)
-        serializerCliente=ClienteSerializer(cliente).data
-        risposta=[{serializerCliente["ragioneSociale"]:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(request.headers["ordineId"]),"ordinePadre":""}]}]
-        return Response(risposta)
-    
-    
-    clienti=Cliente.objects.filter(ragioneSociale__icontains=request.headers["ragioneSociale"])
-    ordini_date= Ordine.objects.filter(dataOrdine__range=[request.headers["dataFrom"],request.headers["dataTo"]])
-    risposta=[]
-    for cliente in clienti:
-        momentaneo={cliente.ragioneSociale:[]}
+    if request.headers["ragioneSociale"] != '':
+        clienti=Cliente.objects.filter(ragioneSociale__icontains=request.headers["ragioneSociale"])
+        ordini_date= Ordine.objects.filter(dataOrdine__range=[request.headers["dataFrom"],request.headers["dataTo"]],descrizione__icontains=request.headers["descrizione"])
+        risposta=[]
+        for cliente in clienti:
+            momentaneo={cliente.ragioneSociale:[]}
+            for ordine in ordini_date:
+                if ordine.clienteId.clienteId == cliente.clienteId:
+                    datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"],"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}
+                    momentaneo[cliente.ragioneSociale].append(datiOrdine)
+            risposta.append(momentaneo)
+    else:
+        ordini_date= Ordine.objects.filter(dataOrdine__range=[request.headers["dataFrom"],request.headers["dataTo"]],descrizione__icontains=request.headers["descrizione"])
+        risposta=[]
         for ordine in ordini_date:
-            if ordine.clienteId.clienteId == cliente.clienteId:
-                datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"ordinePadre":""}
-                momentaneo[cliente.ragioneSociale].append(datiOrdine)
-        risposta.append(momentaneo)
-
-    
+            cliente=Cliente.objects.get(clienteId=ordine.clienteId.clienteId)
+            for risposte in risposta:
+                if cliente.ragioneSociale==risposte.key:
+                    risposte[cliente.ragioneSociale].append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"],"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}]})
+            #datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}
+            risposta.append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"],"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}]})
+ 
     return Response(risposta)
 
 @api_view(['GET'])
