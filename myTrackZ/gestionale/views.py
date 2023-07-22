@@ -58,6 +58,7 @@ def getOrdini(request):
         aziende = []
         for ordine in ordini_date:
             cliente=Cliente.objects.get(clienteId=ordine.clienteId.clienteId)
+<<<<<<< HEAD
             #print(ordine)
                 #risposta.append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}]})
 
@@ -74,6 +75,15 @@ def getOrdini(request):
                 aziende.append(cliente.ragioneSociale)
 
 
+=======
+            for risposte in risposta:
+                key_list = list(risposte.keys())
+                if cliente.ragioneSociale==key_list[0]:
+                    risposte[cliente.ragioneSociale].append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}]})
+            #datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}
+            risposta.append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}]})
+ 
+>>>>>>> 11db7ceda646dbf53c36ad0a558abf54a28e2151
     return Response(risposta)
 
 @api_view(['GET'])
