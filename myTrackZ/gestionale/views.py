@@ -49,7 +49,7 @@ def getOrdini(request):
             momentaneo={cliente.ragioneSociale:[]}
             for ordine in ordini_date:
                 if ordine.clienteId.clienteId == cliente.clienteId:
-                    datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"],"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}
+                    datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}
                     momentaneo[cliente.ragioneSociale].append(datiOrdine)
             risposta.append(momentaneo)
     else:
@@ -58,10 +58,11 @@ def getOrdini(request):
         for ordine in ordini_date:
             cliente=Cliente.objects.get(clienteId=ordine.clienteId.clienteId)
             for risposte in risposta:
-                if cliente.ragioneSociale==risposte.key:
-                    risposte[cliente.ragioneSociale].append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"],"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}]})
+                key_list = list(risposte.keys())
+                if cliente.ragioneSociale==key_list[0]:
+                    risposte[cliente.ragioneSociale].append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}]})
             #datiOrdine={"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}
-            risposta.append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"],"ordinePadre":OrdineSerializer(ordine).data["ordinePadre"]}]})
+            risposta.append({cliente.ragioneSociale:[{"ordineId":OrdineSerializer(ordine).data["ordineId"],"dataOrdine":OrdineSerializer(ordine).data["dataOrdine"],"flagStatoOrdine":OrdineSerializer(ordine).data["flagStatoOrdine"],"numeroProdotti":contaProdotti(OrdineSerializer(ordine).data["ordineId"]),"descrizione":OrdineSerializer(ordine).data["descrizione"]}]})
  
     return Response(risposta)
 
